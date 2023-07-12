@@ -4,16 +4,18 @@
   return "\"" + t + "\""
 }
 
-#let _split_and_insert(l, split: " ", insert: []) = {  // array(str|content) -> array(str|content)
+// reads a list of str or content, ignores content
+// replaces the specified string with the content specified
+#let _replace_with_content(l, replace: " ", content: []) = {  // array(str|content) -> array(str|content)
   let result = ()
   for item in l {
     if type(item) != "string" {
       result.push(item)
       continue
     }
-    for item_split in item.split(split) {
+    for item_split in item.split(replace) {
       result.push(item_split)
-      result.push(insert)
+      result.push(content)
     }
     result.pop()
   }
@@ -27,7 +29,8 @@
   "<-": sym.arrow.l
 )
 
-#let _parse_isotope(t) = {
+// rewrites isotope statement as isotope, otherwise returns same thing
+#let _parse_isotope(t) = {  // str -> str
   let res = t.match(regex("@(\w+),([\d-]+),([\d-]+)@"))
   if res != none {
     return "attach(\"" + res.captures.at(0) + "\", tl: " + res.captures.at(1) + ", bl: "+ res.captures.at(2) +")"
@@ -37,7 +40,7 @@
 
 // describes what to write to the output when a certain state ends
 // return result should be written to output. buffer should be cleared after running this function
-#let _flush_ce_buffer(_state, _buffer) = {
+#let _flush_ce_buffer(_state, _buffer) = {  // (str, str) -> (str)
   return (
     "letter": _quote(_buffer),
     "num_script": "_" + _quote(_buffer),
@@ -53,7 +56,11 @@
   ).at(_state)
 }
 
-#let _parse_ce(_state, _char_in, _buffer) = { // returns next_state, commit, buffer
+// lower level parser operates based off of current state
+// adjusts the output according to current context
+// primarily inserting math symbols as necessary
+// Return: next_state(str), output(str), buffer(str)
+#let _parse_ce(_state, _char_in, _buffer) = {  // (str, str, str) -> (str, str, str)
   let _out = ""
 
   // end previous states on whitespace
@@ -143,40 +150,38 @@
   return (_state, _out, _buffer)
 }
 
-#let _extend_arrows(s) = {  // (str) -> array(str | content)
+// higher level parser which parses strings in a larger context
+// replaces specific components with content that can be directly output
+#let _fill_computed_ce_content(s) = {  // (str) -> array(str | content)
   let result = (s,)
   for symbol in sym_map.values() {
-    result = _split_and_insert(result, split: symbol, insert: [
+    // text over arrow with xarrow
+    let decorated_arrow_result = result
+    for r in result {
+      if type(r) != "string" {
+        continue
+      }
+      let decorated_arrow_matches = r.matches(regex(symbol + "\[([^\]]+)\]"))
+      for decorated_arrow_match in decorated_arrow_matches {
+        decorated_arrow_result = _replace_with_content(decorated_arrow_result, replace: decorated_arrow_match.text, content: [
+          #xarrow(sym: symbol, margin: 0.5em, [
+            $upright(#eval("$" + decorated_arrow_match.captures.at(0) + "$"))$
+          ])
+        ])
+      }
+    }
+    result = decorated_arrow_result
+
+    // lengthen arrow with xarrow
+    result = _replace_with_content(result, replace: symbol, content: [
       #xarrow(sym: symbol, margin: 0.8em, [])
     ])
   }
   return result
 }
 
-#let _extract_ce_substrs(msg) = { // (str) -> array(str | content)
-  let did_push = false
-  let finish = ()
-  for (index, result_str) in msg.enumerate() {
-    for symbol in sym_map.values() {
-      let sym_match_result = result_str.match(regex("(.*)" + symbol + "\[([^\]]+)\]" + "(.*)"))
-      if sym_match_result != none {
-        finish += _extract_ce_substrs((sym_match_result.captures.at(0), ))
-        finish.push(h(0.2em))
-        finish.push(xarrow(sym: symbol, margin: 0.5em, [
-          $upright(#eval("$" + sym_match_result.captures.at(1) + "$"))$
-        ]))
-        finish.push(h(0.2em))  // correct for horizontal spacing error introduced by xarrow
-        finish += _extract_ce_substrs((sym_match_result.captures.at(2), ))
-        did_push = true
-      }
-    }
-    if not did_push {
-      finish += _extend_arrows(result_str)
-    }
-  }
-  return finish
-}
-
+// primary entrypoint for end user
+// first runs through low level state machine parser, then applies higher level replacement
 #let ce(t, debug: false) = { // (str, bool) -> content
   assert(type(t) == "string", message: "ce: argument must be of type `string`")
   let state = ""
@@ -185,7 +190,7 @@
     t = t.replace(regex(pattern), " " + result)
   }
 
-  t = t + " "
+  t = t + " " // append a space to ensure the state machine is reset and output buffer cleared
   let buffer = ""
   let out = ""
   let result = ""
@@ -200,7 +205,7 @@
   }
 
   // convert string to content
-  for result_sub_str in _extract_ce_substrs((result,)) {
+  for result_sub_str in _fill_computed_ce_content(result) {
     if type(result_sub_str) == "string" {
       result_sub_str = "$" + result_sub_str + "$"
       $upright(#eval(result_sub_str))$

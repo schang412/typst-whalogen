@@ -4,6 +4,22 @@
   return "\"" + t + "\""
 }
 
+#let _split_and_insert(l, split: " ", insert: []) = {  // array(str|content) -> array(str|content)
+  let result = ()
+  for item in l {
+    if type(item) != "string" {
+      result.push(item)
+      continue
+    }
+    for item_split in item.split(split) {
+      result.push(item_split)
+      result.push(insert)
+    }
+    result.pop()
+  }
+  return result
+}
+
 #let sym_map = (
   "<-->": sym.arrows.lr,
   "<->": sym.arrow.l.r,
@@ -19,7 +35,9 @@
   return _quote(t)
 }
 
-#let _flush_ce_buffer(_state, _buffer) = { // ends the state
+// describes what to write to the output when a certain state ends
+// return result should be written to output. buffer should be cleared after running this function
+#let _flush_ce_buffer(_state, _buffer) = {
   return (
     "letter": _quote(_buffer),
     "num_script": "_" + _quote(_buffer),
@@ -60,7 +78,7 @@
     ).at(_state, default: ("letter", _flush_ce_buffer(_state, _buffer), ""))
   }
 
-  // on digit 
+  // on digit
   if _char_in.contains(regex("\d")) {
     (_state, _out, _buffer) = (
       "letter": ("num_script", _flush_ce_buffer(_state, _buffer), ""),
@@ -68,7 +86,7 @@
       "num_script": ("num_script", _out, _buffer)
     ).at(_state, default: (_state, _out, _buffer))
   }
-  
+
   // on plus/minus
   if _char_in.contains(regex("[+-]")) {
     (_state, _out, _buffer) = (
@@ -76,7 +94,7 @@
       "punctuation": ("charge", _flush_ce_buffer(_state, _buffer), "")
     ).at(_state, default: (_state, _out, _buffer))
   }
-  
+
   // on caret
   if _char_in.contains("^") {
     (_state, _out, _buffer) = (
@@ -110,7 +128,7 @@
       "_": ("", "", "")
     ).at(_state, default: ("leading_punctuation", _flush_ce_buffer(_state, _buffer), ""))
   }
-  
+
   // isotope parsing
   if _char_in.contains(regex("@")) {
     (_state, _out, _buffer) = (
@@ -120,20 +138,28 @@
       return (_state, _out, _buffer)
     }
   }
-  
+
   _buffer = _buffer + _char_in
   return (_state, _out, _buffer)
 }
 
-#let _extract_ce_substrs(msg) = {
+#let _extend_arrows(s) = {  // (str) -> array(str | content)
+  let result = (s,)
+  for symbol in sym_map.values() {
+    result = _split_and_insert(result, split: symbol, insert: [
+      #xarrow(sym: symbol, margin: 0.8em, [])
+    ])
+  }
+  return result
+}
+
+#let _extract_ce_substrs(msg) = { // (str) -> array(str | content)
   let did_push = false
   let finish = ()
   for (index, result_str) in msg.enumerate() {
     for symbol in sym_map.values() {
       let sym_match_result = result_str.match(regex("(.*)" + symbol + "\[([^\]]+)\]" + "(.*)"))
-      if sym_match_result == none {
-        //finish.push(result_str)
-      } else {
+      if sym_match_result != none {
         finish += _extract_ce_substrs((sym_match_result.captures.at(0), ))
         finish.push(h(0.2em))
         finish.push(xarrow(sym: symbol, margin: 0.5em, [
@@ -145,13 +171,13 @@
       }
     }
     if not did_push {
-      finish.push(result_str)
+      finish += _extend_arrows(result_str)
     }
   }
   return finish
 }
 
-#let ce(t, debug: false) = {
+#let ce(t, debug: false) = { // (str, bool) -> content
   assert(type(t) == "string", message: "ce: argument must be of type `string`")
   let state = ""
 

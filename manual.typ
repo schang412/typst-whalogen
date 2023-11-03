@@ -136,6 +136,7 @@ When whitespace is inserted between the stoichiometric number and a compound wit
 = Nuclides, Isotopes
 #display(ce("@Th,227,90@^+"), "#ce(\"@Th,227,90@^+\")")
 #display(ce("@n,0,-1@^-"), "#ce(\"@n,0,-1@^-\")")
+#display(ce("@Tc,99m,@"), "#ce(\"@Tc,99m,@\")")
 
 To simplify implementation of the parser, this string pattern is introduced to specify nuclides and isotopes.
 This is different from `mhchem`.

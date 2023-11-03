@@ -32,9 +32,9 @@
 
 // rewrites isotope statement as isotope, otherwise returns same thing
 #let _parse_isotope(t) = {  // str -> str
-  let res = t.match(regex("@(\w+),([\d-]+),([\d-]+)@"))
+  let res = t.match(regex("@([^,]*),([^,]*),([^,]*)@"))
   if res != none {
-    return "attach(\"" + res.captures.at(0) + "\", tl: " + res.captures.at(1) + ", bl: "+ res.captures.at(2) +")"
+    return "attach(" + _quote(res.captures.at(0)) + ", tl: " + _quote(res.captures.at(1)) + ", bl: " + _quote(res.captures.at(2)) +")"
   }
   return _quote(t)
 }

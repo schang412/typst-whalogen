@@ -153,6 +153,7 @@ The parenthesis, brackets, and braces will automatically size to match the inner
 #display(ce("A <- B"), "#ce(\"A <- B\")")
 #display(ce("A <-> B"), "#ce(\"A <-> B\")")
 #display(ce("A <--> B"), "#ce(\"A <--> B\")")
+#display(ce("A <=> B"), "#ce(\"A <=> B\")")
 
 These reaction arrows come from the built-in `sym` module.
 

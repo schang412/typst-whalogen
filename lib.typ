@@ -26,7 +26,8 @@
   "<-->": sym.arrows.lr,
   "<->": sym.arrow.l.r,
   "->": sym.arrow.r,
-  "<-": sym.arrow.l
+  "<-": sym.arrow.l,
+  "<=>": sym.harpoons.rtlb
 )
 
 // rewrites isotope statement as isotope, otherwise returns same thing

@@ -1,7 +1,7 @@
 [package]
 name = "whalogen"
 version = "0.1.0"
-repository = "https://github.com/schang412/whalogen"
+repository = "https://github.com/schang412/typst-whalogen"
 entrypoint = "lib.typ"
 authors = [
     "Spencer Chang <spencer@sycee.xyz>"

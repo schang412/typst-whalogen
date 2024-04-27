@@ -1,7 +1,7 @@
-#import "@local/whalogen:0.1.0": ce
+#import "@local/whalogen:0.2.0": ce
 
 #let pkg_name = "whalogen"
-#let pkg_version = "v0.1.0"
+#let pkg_version = "v0.2.0"
 #let author = (
   name: "Spencer Chang",
   email: "spencer@sycee.xyz",
@@ -59,7 +59,7 @@
 
 = Quick Start Guide
 ```typst
-#import "@preview/whalogen:0.1.0": ce
+#import "@preview/whalogen:0.2.0": ce
 
 This is the formula for water: #ce("H2O")
 

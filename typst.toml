@@ -1,6 +1,6 @@
 [package]
 name = "whalogen"
-version = "0.1.0"
+version = "0.2.0"
 repository = "https://github.com/schang412/typst-whalogen"
 entrypoint = "lib.typ"
 authors = [

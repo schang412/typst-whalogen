@@ -1,4 +1,4 @@
-#import "@preview/xarrow:0.1.1": xarrow
+#import "@preview/xarrow:0.3.1": xarrow
 
 #let _quote(t) = {
   return "\"" + t + "\""

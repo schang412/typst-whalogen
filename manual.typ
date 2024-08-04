@@ -120,6 +120,10 @@ The en-dash (#sym.dash.en) will be used for minus.
 
 A caret (^) will imply that subsequent characters should be in the superscript unless interrupted by certain characters (i.e. whitespace and underscore).
 
+= Unpaired Electrons and Radical Dots
+#display(ce("OCO^.-"), "#ce(\"OCO^.-\")")
+#display(ce("NO^2.-"), "#ce(\"NO^2.-\")")
+
 #pagebreak()
 = Stoichiometric Numbers
 #display(ce("2H2O"), "#ce(\"2H2O\")")

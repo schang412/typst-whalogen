@@ -48,7 +48,7 @@
     "": _buffer,
     "num": _buffer,
     "charge": "^" + _quote(_buffer.replace("-", sym.dash.en)),
-    "caret": "^" + _quote(_buffer.replace("^", "", count: 1).replace("-", sym.dash.en)),
+    "caret": "^" + _quote(_buffer.replace("^", "", count: 1).replace("-", sym.dash.en).replace(".", sym.bullet)),
     "underscore": "_" + _quote(_buffer.replace("_", "", count: 1)),
     "code": _buffer,
     "punctuation": _buffer,

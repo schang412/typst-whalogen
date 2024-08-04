@@ -162,6 +162,7 @@ It is also possible to include text above the arrow. The backend uses the `xarro
 
 #display(ce("A ->[H2O] B"), "#ce(\"A ->[H2O] B\")")
 #display(ce("A ->[some text] B"), "#ce(\"A ->[some text] B\")")
+#display(ce("A ->[some text][other text] B"), "#ce(\"A ->[some text][other text] B\")")
 
 = States of Aggregation
 #display(ce("H2(aq)"), "#ce(\"H2(aq)\")")

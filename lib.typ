@@ -162,6 +162,20 @@
       if type(r) != "string" {
         continue
       }
+      // match arrow with top and bottom text
+      let decorated_arrow_matches = r.matches(regex(symbol + "\[([^\]]+)\]\[([^\]]+)\]"))
+      for decorated_arrow_match in decorated_arrow_matches {
+        decorated_arrow_result = _replace_with_content(decorated_arrow_result, replace: decorated_arrow_match.text, content: [
+          #xarrow(sym: symbol, margin: 0.5em, [
+            $upright(#eval("$" + decorated_arrow_match.captures.at(0) + "$"))$
+          ], opposite: [
+            $upright(#eval("$" + decorated_arrow_match.captures.at(1) + "$"))$
+          ]
+          )
+        ])
+      }
+
+      // match arrow with top only text
       let decorated_arrow_matches = r.matches(regex(symbol + "\[([^\]]+)\]"))
       for decorated_arrow_match in decorated_arrow_matches {
         decorated_arrow_result = _replace_with_content(decorated_arrow_result, replace: decorated_arrow_match.text, content: [

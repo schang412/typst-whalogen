@@ -9,7 +9,7 @@
 #let _replace_with_content(l, replace: " ", content: []) = {  // array(str|content) -> array(str|content)
   let result = ()
   for item in l {
-    if type(item) != "string" {
+    if type(item) != str {
       result.push(item)
       continue
     }
@@ -17,7 +17,8 @@
       result.push(item_split)
       result.push(content)
     }
-    result.pop()
+    // pop and ignore popped item
+    let _ = result.pop()
   }
   return result
 }
@@ -176,7 +177,7 @@
     // text over arrow with xarrow
     let decorated_arrow_result = result
     for r in result {
-      if type(r) != "string" {
+      if type(r) != str {
         continue
       }
       // match arrow with top and bottom text
@@ -215,7 +216,7 @@
 // primary entrypoint for end user
 // first runs through low level state machine parser, then applies higher level replacement
 #let ce(t, debug: false) = { // (str, bool) -> content
-  assert(type(t) == "string", message: "ce: argument must be of type `string`")
+  assert(type(t) == str, message: "ce: argument must be of type `string`")
   let state = ""
 
   for (pattern, result) in sym_map {
@@ -238,10 +239,10 @@
 
   // convert string to content
   for result_sub_str in _fill_computed_ce_content(result) {
-    if type(result_sub_str) == "string" {
+    if type(result_sub_str) == str {
       result_sub_str = "$" + _replace_math(result_sub_str) + "$"
       $#eval(result_sub_str)$
-    } else if type(result_sub_str) == "content" {
+    } else if type(result_sub_str) == content {
       result_sub_str
     }
   }

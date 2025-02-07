@@ -52,6 +52,7 @@
     "caret": "^" + _quote(_buffer.replace("^", "", count: 1).replace("-", sym.dash.en).replace(".", sym.bullet)),
     "underscore": "_" + _quote(_buffer.replace("_", "", count: 1)),
     "code": _buffer,
+    "math": _buffer,
     "punctuation": _buffer,
     "leading_punctuation": _buffer,
     "isotope?": _parse_isotope(_buffer),
@@ -138,6 +139,13 @@
     ).at(_state, default: ("leading_punctuation", _flush_ce_buffer(_state, _buffer), ""))
   }
 
+  // on math...
+  if _char_in.contains(regex("\$")) {
+    (_state, _out, _buffer) = (
+      "_": ("", "", "")
+    ).at(_state, default: ("math", _flush_ce_buffer(_state, _buffer), ""))
+  }
+
   // isotope parsing
   if _char_in.contains(regex("@")) {
     (_state, _out, _buffer) = (
@@ -150,6 +158,15 @@
 
   _buffer = _buffer + _char_in
   return (_state, _out, _buffer)
+}
+
+#let _replace_math(s) = {
+    for match in s.matches(regex("(\$.*?\$)")) {
+        s = s.replace(match.text, ")" + match.text.slice(1,-1) + " upright(")
+    }
+        
+  let out = "upright(" + s + ")"
+  out.replace("upright( )","").replace("upright()","")
 }
 
 // higher level parser which parses strings in a larger context
@@ -168,9 +185,9 @@
       for decorated_arrow_match in decorated_arrow_matches {
         decorated_arrow_result = _replace_with_content(decorated_arrow_result, replace: decorated_arrow_match.text, content: [
           #xarrow(sym: symbol, margin: 0.5em, [
-            $upright(#eval("$" + decorated_arrow_match.captures.at(0) + "$"))$
+            #eval("$" + _replace_math(decorated_arrow_match.captures.at(0)) + "$")
           ], opposite: [
-            $upright(#eval("$" + decorated_arrow_match.captures.at(1) + "$"))$
+            #eval("$" + _replace_math(decorated_arrow_match.captures.at(1)) + "$")
           ]
           )
         ])
@@ -181,7 +198,7 @@
       for decorated_arrow_match in decorated_arrow_matches {
         decorated_arrow_result = _replace_with_content(decorated_arrow_result, replace: decorated_arrow_match.text, content: [
           #xarrow(sym: symbol, margin: 0.5em, [
-            $upright(#eval("$" + decorated_arrow_match.captures.at(0) + "$"))$
+            #eval("$" + _replace_math(decorated_arrow_match.captures.at(0)) + "$")
           ])
         ])
       }
@@ -223,8 +240,8 @@
   // convert string to content
   for result_sub_str in _fill_computed_ce_content(result) {
     if type(result_sub_str) == str {
-      result_sub_str = "$" + result_sub_str + "$"
-      $upright(#eval(result_sub_str))$
+      result_sub_str = "$" + _replace_math(result_sub_str) + "$"
+      $#eval(result_sub_str)$
     } else if type(result_sub_str) == content {
       result_sub_str
     }

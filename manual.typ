@@ -178,6 +178,11 @@ To achieve the opposite behavior as shown above, insert whitespace or underscore
 #display(ce("H2 (aq)"), "#ce(\"H2 (aq)\")")
 #display(ce("NaOH_(aq, #sym.infinity)"), "#ce(\"NaOH_(aq, #sym.infinity)\")")
 
+= Variables
+#display(ce("H2O <=>[$k_1$][$k_-1$] OH- + H+"), "#ce(\"H2O <=>[$k_1$][$k_-1$] OH- + H+\")")
+#display(ce("$x$ NaOH + H2SO4 -> Na$_x$ H$_(2 -x)$SO4"), "#ce(\"$x$ NaOH + H2SO4 = Na$_x$ H$_(2 -x)$SO4\")")
+Sometimes it is needed to use variables in mathematical notation (i.e. italic). This is possible by using the equation delimiter $\$dots\$$ inside `ce()`.
+
 #pagebreak()
 = Further Examples
 `ce` is a function that takes string input and returns a content block. As such, it can interact with the same rules as other content blocks in math mode. 

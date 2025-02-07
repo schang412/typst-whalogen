@@ -1,7 +1,7 @@
-#import "@local/whalogen:0.2.0": ce
+#import "@local/whalogen:0.3.0": ce
 
 #let pkg_name = "whalogen"
-#let pkg_version = "v0.2.0"
+#let pkg_version = "v0.3.0"
 #let author = (
   name: "Spencer Chang",
   email: "spencer@sycee.xyz",

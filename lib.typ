@@ -23,7 +23,7 @@
   return result
 }
 
-#let sym_map = (
+#let _sym_map = (
   "<-->": sym.arrows.lr,
   "<->": sym.arrow.l.r,
   "->": sym.arrow.r,
@@ -173,7 +173,7 @@
 // replaces specific components with content that can be directly output
 #let _fill_computed_ce_content(s) = {  // (str) -> array(str | content)
   let result = (s,)
-  for symbol in sym_map.values() {
+  for symbol in _sym_map.values() {
     // text over arrow with xarrow
     let decorated_arrow_result = result
     for r in result {
@@ -219,7 +219,7 @@
   assert(type(t) == str, message: "ce: argument must be of type `string`")
   let state = ""
 
-  for (pattern, result) in sym_map {
+  for (pattern, result) in _sym_map {
     t = t.replace(regex(pattern), " " + result)
   }
 

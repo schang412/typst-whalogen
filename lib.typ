@@ -17,8 +17,7 @@
       result.push(item_split)
       result.push(content)
     }
-    // pop and ignore popped item
-    let _ = result.pop()
+    result.pop()
   }
   return result
 }
@@ -40,6 +39,14 @@
   return _quote(t)
 }
 
+#let _parse_oxidation_number(t) = {  // str -> str
+  let res = t.match(regex("\|([^,]*),([^,]*)\|"))
+  if res != none {
+    return "upright(limits(" + _quote(res.captures.at(0)) + ")^" + _quote(res.captures.at(1)) + ")"
+  }
+  return _quote(t)
+}
+
 // describes what to write to the output when a certain state ends
 // return result should be written to output. buffer should be cleared after running this function
 #let _flush_ce_buffer(_state, _buffer) = {  // (str, str) -> (str)
@@ -56,6 +63,7 @@
     "punctuation": _buffer,
     "leading_punctuation": _buffer,
     "isotope?": _parse_isotope(_buffer),
+    "oxidation_number?": _parse_oxidation_number(_buffer),
   ).at(_state)
 }
 
@@ -83,6 +91,7 @@
     (_state, _out, _buffer) = (
       "letter": ("letter", _out, _buffer),
       "isotope?": ("isotope?", _out, _buffer),
+      "oxidation_number?": ("oxidation_number?", _out, _buffer),
       "code": ("code", _out, _buffer),
       "caret": ("caret", _out, _buffer),
     ).at(_state, default: ("letter", _flush_ce_buffer(_state, _buffer), ""))
@@ -147,11 +156,44 @@
   }
 
   // isotope parsing
-  if _char_in.contains(regex("@")) {
+  if _char_in.contains("@") {
     (_state, _out, _buffer) = (
       "isotope?": ("", _flush_ce_buffer(_state, _buffer + _char_in), "")
     ).at(_state, default: ("isotope?", _out, _buffer))
     if _state != "isotope?" {
+      return (_state, _out, _buffer)
+    }
+  }
+  
+  // oxidation number parsing
+  if _char_in.contains("|") {
+    let oxidation_buffer = _buffer + _char_in
+    let value = ""
+    
+    let res = oxidation_buffer.match(regex("\|([^,]*),([^,]*)\|"))
+    if res != none {
+
+      let ox_t = res.captures.at(0) + " "
+      let ox_state = ""
+      let ox_buffer = ""
+      let ox_out = ""
+      let ox_result = ""
+
+      // iterate through the string
+      for ox_c in ox_t.codepoints() {
+        (ox_state, ox_out, ox_buffer) = _parse_ce(ox_state, ox_c, ox_buffer)
+        ox_result += ox_out
+      }
+      value = "upright(limits(" + ox_result + ")^" + _quote(res.captures.at(1)) + ")"
+    }
+    else{
+      value = _quote(oxidation_buffer)
+    }
+    
+    (_state, _out, _buffer) = (
+      "oxidation_number?": ("",  value, "")
+    ).at(_state, default: ("oxidation_number?", _out, _buffer))
+    if _state != "oxidation_number?" {
       return (_state, _out, _buffer)
     }
   }

@@ -120,6 +120,11 @@ The en-dash (#sym.dash.en) will be used for minus.
 
 A caret (^) will imply that subsequent characters should be in the superscript unless interrupted by certain characters (i.e. whitespace and underscore).
 
+= Oxidation Numbers (RedOx Reaction Syntax)
+#display(ce("|Mn,+II| + |H2,+I||O2,-I| -> |Mn,+IV||O2,-II| + |H2,+I||O,-II|"), "#ce(\"|Mn,+II| + |H2,+I||O2,-I| -> |Mn,+IV||O2,-II| + |H2,+I||O,-II|\")")
+
+Wrapping an element X with vertical bars like this: |X,Y| will ensure that Y is placed above X. Make sure to not include any spaces or you may get unintended behavior. Also ensure that anything that should affect the element (for example the 2 in #ce("H2")) is placed inside the bars.
+
 = Unpaired Electrons and Radical Dots
 #display(ce("OCO^.-"), "#ce(\"OCO^.-\")")
 #display(ce("NO^2.-"), "#ce(\"NO^2.-\")")

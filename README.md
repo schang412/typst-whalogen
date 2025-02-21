@@ -9,7 +9,7 @@ GitHub repository: https://github.com/schang412/typst-whalogen
 ![](gallery/example.png)
 
 ```typst
-#import "@preview/whalogen:0.2.0": ce
+#import "@preview/whalogen:0.3.0": ce
 
 $ #ce("HCl + H2O -> H3O+ + Cl-") $
 ```

@@ -120,11 +120,15 @@ The en-dash (#sym.dash.en) will be used for minus.
 
 A caret (^) will imply that subsequent characters should be in the superscript unless interrupted by certain characters (i.e. whitespace and underscore).
 
+= Oxidation Numbers (RedOx Reaction Syntax)
+#display(ce("|Mn,+II| + |H2,+I||O2,-I| -> |Mn,+IV||O2,-II| + |H2,+I||O,-II|"), "#ce(\"|Mn,+II| + |H2,+I||O2,-I| -> |Mn,+IV||O2,-II| + |H2,+I||O,-II|\")")
+
+Wrapping an element X with vertical bars like this: |X,Y| will ensure that Y is placed above X. Make sure to not include any spaces or you may get unintended behavior. Also ensure that anything that should affect the element (for example the 2 in #ce("H2")) is placed inside the bars.
+
 = Unpaired Electrons and Radical Dots
 #display(ce("OCO^.-"), "#ce(\"OCO^.-\")")
 #display(ce("NO^2.-"), "#ce(\"NO^2.-\")")
 
-#pagebreak()
 = Stoichiometric Numbers
 #display(ce("2H2O"), "#ce(\"2H2O\")")
 #display(ce("2 H2O"), "#ce(\"2 H2O\")")
@@ -183,7 +187,6 @@ To achieve the opposite behavior as shown above, insert whitespace or underscore
 #display(ce("$x$ NaOH + H2SO4 -> Na$_x$ H$_(2 -x)$SO4"), "#ce(\"$x$ NaOH + H2SO4 = Na$_x$ H$_(2 -x)$SO4\")")
 Sometimes it is needed to use variables in mathematical notation (i.e. italic). This is possible by using the equation delimiter $\$dots\$$ inside `ce()`.
 
-#pagebreak()
 = Further Examples
 `ce` is a function that takes string input and returns a content block. As such, it can interact with the same rules as other content blocks in math mode. 
 
